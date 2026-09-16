@@ -1,0 +1,8 @@
+# compiled
+/dist
+/node_modules
+/coverage
+/data
+.env
+*.sqlite
+*.sqlite-*

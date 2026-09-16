@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: hopper-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_PATH
+        value: /opt/render/project/src/data/hopper.sqlite
+      - key: FRONTEND_ORIGIN
+        sync: false

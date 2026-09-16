@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-*
+backend/data
+.DS_Store
+frontend/dist
+backend/dist
+.cursor
+.vercel
+
