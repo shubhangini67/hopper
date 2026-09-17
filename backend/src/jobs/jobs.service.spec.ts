@@ -55,6 +55,13 @@ describe('JobsService', () => {
     expect(done.finishedAt).toBeTruthy();
   });
 
+  it('rejects a no-op pending → pending write', () => {
+    const created = service.create({ title: 'Stay waiting', type: 'email' });
+    expect(() =>
+      service.updateStatus(created.id, 'pending', { from: 'pending' }),
+    ).toThrow();
+  });
+
   it('rejects completed → running', () => {
     const created = service.create({ title: 'Stay finished', type: 'export' });
     service.updateStatus(created.id, 'running', { from: 'pending' });

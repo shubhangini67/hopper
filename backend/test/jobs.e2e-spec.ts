@@ -29,6 +29,7 @@ describe('Jobs API (e2e)', () => {
         whitelist: true,
         forbidNonWhitelisted: true,
         transform: true,
+        transformOptions: { enableImplicitConversion: true },
       }),
     );
     app.useGlobalFilters(new ProblemFilter());
@@ -45,6 +46,21 @@ describe('Jobs API (e2e)', () => {
       .post('/jobs')
       .send({ title: 'ab', type: 'email' })
       .expect(400);
+  });
+
+  it('rejects a whitespace-only title', async () => {
+    await request(app.getHttpServer())
+      .post('/jobs')
+      .send({ title: '   ', type: 'email' })
+      .expect(400);
+  });
+
+  it('stores the trimmed title', async () => {
+    const created = await request(app.getHttpServer())
+      .post('/jobs')
+      .send({ title: '  Send invoices  ', type: 'email' })
+      .expect(201);
+    expect(created.body.title).toBe('Send invoices');
   });
 
   it('creates, lists, transitions, and deletes a job', async () => {
@@ -76,6 +92,25 @@ describe('Jobs API (e2e)', () => {
       .patch(`/jobs/${created.body.id}/status`)
       .send({ status: 'running', from: 'completed' })
       .expect(409);
+
+    await request(app.getHttpServer())
+      .delete(`/jobs/${created.body.id}`)
+      .expect(204);
+  });
+
+  it('rejects same-status updates as INVALID_TRANSITION', async () => {
+    const created = await request(app.getHttpServer())
+      .post('/jobs')
+      .send({ title: 'No-op status', type: 'email' })
+      .expect(201);
+
+    const res = await request(app.getHttpServer())
+      .patch(`/jobs/${created.body.id}/status`)
+      .send({ from: 'pending', status: 'pending' })
+      .expect(409);
+
+    expect(res.body.code).toBe('INVALID_TRANSITION');
+    expect(created.body.status).toBe('pending');
 
     await request(app.getHttpServer())
       .delete(`/jobs/${created.body.id}`)

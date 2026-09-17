@@ -9,6 +9,7 @@ describe('job status machine', () => {
     expect(allowedTransitions('pending')).toEqual(['running', 'failed']);
     expect(canTransition('pending', 'running')).toBe(true);
     expect(canTransition('pending', 'failed')).toBe(true);
+    expect(canTransition('pending', 'pending')).toBe(false);
   });
 
   it('allows running to completed or failed', () => {

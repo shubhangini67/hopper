@@ -370,10 +370,6 @@ export class JobsService implements OnModuleInit {
         throw staleWrite(current, next);
       }
 
-      if (options.from === next) {
-        return current;
-      }
-
       if (!canTransition(options.from, next)) {
         throw invalidTransition(
           current,
