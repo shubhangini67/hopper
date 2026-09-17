@@ -11,6 +11,8 @@
 | | |
 | --- | --- |
 | **Live app** | [hopper-web-rust.vercel.app](https://hopper-web-rust.vercel.app) |
+| **Live API** | [hopper-api-ijex.onrender.com](https://hopper-api-ijex.onrender.com) |
+| **Health** | [hopper-api-ijex.onrender.com/health](https://hopper-api-ijex.onrender.com/health) |
 | **Repository** | [github.com/shubhangini67/hopper](https://github.com/shubhangini67/hopper) |
 
 Hopper is a React dashboard in front of a NestJS API. The board is the operator surface. The interesting part is the write path: **React never has to be trusted.**
@@ -308,25 +310,26 @@ npm run test:e2e   # validation, lifecycle, concurrent PATCH
 | Piece | Host | Root | Live |
 | --- | --- | --- | --- |
 | App | Vercel | `frontend/` | [hopper-web-rust.vercel.app](https://hopper-web-rust.vercel.app) |
-| API | Vercel serverless, or Render | `backend/` | `api/index.ts` + `vercel.json`, and `render.yaml` |
+| API | Render | `backend/` | [hopper-api-ijex.onrender.com](https://hopper-api-ijex.onrender.com) |
 
 **App env (build-time)**
 
 ```
-VITE_API_URL=https://<api-host>
+VITE_API_URL=https://hopper-api-ijex.onrender.com
 ```
 
 **API env**
 
 ```
 NODE_ENV=production
-DATABASE_PATH=/tmp/hopper.sqlite
+NODE_VERSION=22
+DATABASE_PATH=/opt/render/project/src/data/hopper.sqlite
 FRONTEND_ORIGIN=https://hopper-web-rust.vercel.app
 ```
 
-On Render, prefer a disk and `DATABASE_PATH=/opt/render/project/src/data/hopper.sqlite`. CORS allows `localhost` / `127.0.0.1:5173` plus `FRONTEND_ORIGIN`. Request headers include `Idempotency-Key` and `X-Hopper-Operator`.
+CORS allows `localhost` / `127.0.0.1:5173` plus `FRONTEND_ORIGIN`. Request headers include `Idempotency-Key` and `X-Hopper-Operator`.
 
-Serverless SQLite lives in `/tmp` and resets when the instance goes cold. Fine for a review demo. The transition SQL does not change if you later attach a disk or Postgres.
+Free SQLite on a disposable disk resets on deploys. For a durable demo, attach a persistent disk or swap the driver for Postgres. The transition SQL does not change.
 
 ---
 
