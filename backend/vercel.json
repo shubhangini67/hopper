@@ -1,0 +1,9 @@
+{
+  "functions": {
+    "api/index.ts": {
+      "maxDuration": 30,
+      "includeFiles": "node_modules/better-sqlite3/**"
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}

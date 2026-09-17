@@ -10,10 +10,8 @@
 
 | | |
 | --- | --- |
-| **Live app** | [hopper-queue.vercel.app](https://hopper-queue.vercel.app) |
-| **Live API** | [hopper-api.onrender.com](https://hopper-api.onrender.com) |
-| **Health** | [hopper-api.onrender.com/health](https://hopper-api.onrender.com/health) |
-| **Repository** | this repo |
+| **Live app** | [hopper-web-rust.vercel.app](https://hopper-web-rust.vercel.app) |
+| **Repository** | [github.com/shubhangini67/hopper](https://github.com/shubhangini67/hopper) |
 
 Hopper is a React dashboard in front of a NestJS API. The board is the operator surface. The interesting part is the write path: **React never has to be trusted.**
 
@@ -307,29 +305,28 @@ npm run test:e2e   # validation, lifecycle, concurrent PATCH
 
 ## Deploy
 
-| Piece | Host | Root | Notes |
+| Piece | Host | Root | Live |
 | --- | --- | --- | --- |
-| API | Render | `backend/` | `render.yaml` in this repo |
-| App | Vercel | `frontend/` | Build-time `VITE_API_URL` |
+| App | Vercel | `frontend/` | [hopper-web-rust.vercel.app](https://hopper-web-rust.vercel.app) |
+| API | Vercel serverless, or Render | `backend/` | `api/index.ts` + `vercel.json`, and `render.yaml` |
+
+**App env (build-time)**
+
+```
+VITE_API_URL=https://<api-host>
+```
 
 **API env**
 
 ```
 NODE_ENV=production
-PORT=10000
-DATABASE_PATH=/opt/render/project/src/data/hopper.sqlite
-FRONTEND_ORIGIN=https://hopper-queue.vercel.app
+DATABASE_PATH=/tmp/hopper.sqlite
+FRONTEND_ORIGIN=https://hopper-web-rust.vercel.app
 ```
 
-**App env**
+On Render, prefer a disk and `DATABASE_PATH=/opt/render/project/src/data/hopper.sqlite`. CORS allows `localhost` / `127.0.0.1:5173` plus `FRONTEND_ORIGIN`. Request headers include `Idempotency-Key` and `X-Hopper-Operator`.
 
-```
-VITE_API_URL=https://hopper-api.onrender.com
-```
-
-CORS allows `localhost` / `127.0.0.1:5173` plus `FRONTEND_ORIGIN`. Request headers include `Idempotency-Key` and `X-Hopper-Operator`.
-
-Free SQLite on a disposable disk resets on deploys. For a durable demo, attach a persistent disk or swap the driver for Postgres. The transition SQL does not change.
+Serverless SQLite lives in `/tmp` and resets when the instance goes cold. Fine for a review demo. The transition SQL does not change if you later attach a disk or Postgres.
 
 ---
 
